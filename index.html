@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Socket_IO basic example</title>
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <form id="form">
+      <label for="username">Name </label>
+      <input type="text" id="userName" />
+      <label for="message">Message </label>
+      <input type="text" id="userMessage" />
+      <button type="submit">Send</button>
+    </form>
+
+    <div>
+      <h2>Messages</h2>
+      <ul id="messages" style="list-style: none"></ul>
+    </div>
+    <script>
+      const socket = io();
+
+      socket.on("chatMessage", (message) => {
+        console.log("got broadcasted message");
+        addMessage(message);
+      });
+
+      const form = document.getElementById("form");
+      const userNameEl = document.getElementById("userName");
+      const userMessageEl = document.getElementById("userMessage");
+      const messagesEl = document.getElementById("messages");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const userName = userNameEl.value;
+        const userMessage = userMessageEl.value;
+        const event = `[${userName}]: ${userMessage}`;
+        console.log(event);
+        addMessage(event);
+
+        socket.emit("chatMessage", event); //our message
+
+        userMessageEl.value = "";
+      });
+
+      function addMessage(message) {
+        const item = document.createElement("li");
+        item.innerText = message;
+        messagesEl.appendChild(item);
+      }
+    </script>
+  </body>
+</html>
